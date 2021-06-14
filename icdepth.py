@@ -24,40 +24,45 @@ def vial_range_prompt():
     return first_ic_vial, last_ic_vial
 
 
-outdir = 'test_out'
-logfile = '/Users/erhardt/Work/EGRIP-IC/EGRIP-2020_AWI_AS_files/200127-005.EGRIP.AWI_vial_info.csv'
-outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
+if __name__ == '__main__':
+    try:
+        logfile = sys.argv[1]
+    except IndexError:
+        print('Provide logfile as commandline argument')
 
-log_data = pd.read_csv(logfile, index_col=0)
+    outdir = 'test_out'
+    outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
 
-depth_top = log_data['Depth_top'].iloc[0]
-depth_bot = log_data['Depth_bot'].iloc[1]
-bags = log_data['Bag'].unique().tolist()
-nlogged = len(log_data)
+    log_data = pd.read_csv(logfile, index_col=0)
 
-print('Processing: %s' % logfile)
+    depth_top = log_data['Depth_top'].iloc[0]
+    depth_bot = log_data['Depth_bot'].iloc[1]
+    bags = log_data['Bag'].unique().tolist()
+    nlogged = len(log_data)
 
-print('Depth range: %.3f - %.3f' % (depth_top, depth_bot))
-print('Bags: ', bags)
-print('Number of pulses logged: %g' % nlogged)
+    print('Processing: %s' % logfile)
 
-first_ic_vial, last_ic_vial = vial_range_prompt()
-nfilled = last_ic_vial - first_ic_vial + 1
-print('Number of vials filled: %g' % nfilled)
-print()
+    print('Depth range: %.3f - %.3f' % (depth_top, depth_bot))
+    print('Bags: ', bags)
+    print('Number of pulses logged: %g' % nlogged)
 
-if nfilled == nlogged:
-    print('Nice, logged and filled number of vials match')
-else:
-    print('WARNING, logged and filled number of vials DO NOT MATCH')
-    print('logged:', nlogged)
-    print('filled:', nfilled)
-    sys.exit(1)
+    first_ic_vial, last_ic_vial = vial_range_prompt()
+    nfilled = last_ic_vial - first_ic_vial + 1
+    print('Number of vials filled: %g' % nfilled)
+    print()
 
-ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
+    if nfilled == nlogged:
+        print('Nice, logged and filled number of vials match')
+    else:
+        print('WARNING, logged and filled number of vials DO NOT MATCH')
+        print('logged:', nlogged)
+        print('filled:', nfilled)
+        sys.exit(1)
 
-log_data['IC_Vial'] = np.arange(first_ic_vial, last_ic_vial + 1)
-print()
-print('Saving to: %s' % outfile)
-log_data.to_csv(outfile, index=True)
-print('done.')
+    ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
+
+    log_data['IC_Vial'] = np.arange(first_ic_vial, last_ic_vial + 1)
+    print()
+    print('Saving to: %s' % outfile)
+    log_data.to_csv(outfile, index=True)
+    print('done.')
