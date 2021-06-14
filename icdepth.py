@@ -12,6 +12,18 @@ def prompt_vial_range():
     return first_ic_vial, last_ic_vial
 
 
+def prompt_vialnumber(first_vial, last_vial):
+    n = input('Vial? ')
+    try:
+        n = int(n)
+        if n > last_vial or n < first_vial:
+            raise(ValueError('Number out of range'))
+    except ValueError:
+        print('Please enter an integer between %g and %g' % (first_vial, last_vial))
+        return prompt_vialnumber(first_vial, last_vial)
+    return n
+
+
 def merge_with_next_vial(log_data, vial_idx):
     """Merge a missed vial with the next vial
     and update log_data table
@@ -72,12 +84,14 @@ if __name__ == '__main__':
 
         # Ask for all missed pulses befor changing log data
         # in reverse order to avoid indexing issues
-        missed = []
+        missed_vials = []
+        print('Missed vials?')
         for imissed in range(nmissed):
-            missed.append(int(input('Pulse missed at end of vial: ')))
+            missed_vial = prompt_vialnumber(first_ic_vial, last_ic_vial)
+            missed_vials.append(missed_vial)
         print()
-        for vmissed in sorted(missed, reverse=True):
-            pulse_idx = np.where(ic_vials == vmissed)[0].item()
+        for missed_vial in sorted(missed_vials, reverse=True):
+            pulse_idx = np.where(ic_vials == missed_vial)[0].item()
             print('Merging pulse %g with next vial' % pulse_idx)
             log_data = merge_with_next_vial(log_data, pulse_idx)
 
