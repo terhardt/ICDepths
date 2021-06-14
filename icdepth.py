@@ -30,6 +30,7 @@ def merge_with_next_vial(log_data, vial_idx):
 
     Used to correct for missed pulses
     """
+    log_data.loc[vial_idx, 'Merged'] = 1
     log_data.loc[vial_idx, 'Depth_bot'] = log_data.loc[vial_idx + 1, 'Depth_bot']
     log_data.loc[vial_idx, 'Breaks'] = np.int64(np.any(log_data.loc[[vial_idx, vial_idx + 1], 'Breaks'] == 1))
     return log_data.drop(vial_idx + 1)
@@ -45,6 +46,8 @@ if __name__ == '__main__':
     outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
 
     log_data = pd.read_csv(logfile, index_col=0)
+    # Add column for merged flag
+    log_data['Merged'] = 0
 
     depth_top = log_data['Depth_top'].iloc[0]
     depth_bot = log_data['Depth_bot'].iloc[1]
@@ -86,7 +89,7 @@ if __name__ == '__main__':
             pulse_idx = np.where(ic_vials == vmissed)[0].item()
             print('Merging pulse %g with next vial' % pulse_idx)
             log_data = merge_with_next_vial(log_data, pulse_idx)
-    
+
     log_data['IC_Vial'] = ic_vials
     print()
     print('Saving to: %s' % outfile)
