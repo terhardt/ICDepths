@@ -69,8 +69,13 @@ if __name__ == '__main__':
         print('WARNING, logged and filled number of vials DO NOT MATCH')
         print('logged:', nlogged)
         print('filled:', nfilled)
-        nmissed = nlogged - nfilled
-        print('Please enter the numbers of %g missed vials' % nmissed)
+        # Ask how many pulses where missed during the run
+        nmissed = input('Please enter the numbers of missed pulses (%g)' % (nlogged - nfilled))
+        if nmissed == '':
+            nmissed = nlogged - nfilled
+        else:
+            nmissed = int(nmissed)
+
         # Ask for all missed pulses befor changing log data
         # in reverse order to avoid indexing issues
         missed = []
