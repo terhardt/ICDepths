@@ -5,18 +5,6 @@ from os import path
 import sys
 
 
-def yesno_prompt(question):
-    """'Prompt user for yes/no answer"""
-    prompt = '%s ? (y/n): ' % question
-    ans = input(prompt).strip().lower()
-    if ans not in ['y', 'n']:
-        print(f'{ans} is invalid, please try again...')
-        return yesno_prompt(question)
-    if ans == 'y':
-        return True
-    return False
-
-
 def vial_range_prompt():
     """Prompt user for first and last vial of run"""
     first_ic_vial = int(input('First IC vial? '))
