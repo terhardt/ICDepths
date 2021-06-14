@@ -71,9 +71,14 @@ if __name__ == '__main__':
         print('filled:', nfilled)
         nmissed = nlogged - nfilled
         print('Please enter the numbers of %g missed vials' % nmissed)
+        # Ask for all missed pulses befor changing log data
+        # in reverse order to avoid indexing issues
+        missed = []
         for imissed in range(nmissed):
-            missed = int(input('Pulse missed at end of vial: '))
-            pulse_idx = np.where(ic_vials == missed)[0].item()
+            missed.append(int(input('Pulse missed at end of vial: ')))
+        print()
+        for vmissed in sorted(missed, reverse=True):
+            pulse_idx = np.where(ic_vials == vmissed)[0].item()
             print('Merging pulse %g with next vial' % pulse_idx)
             log_data = merge_with_next_vial(log_data, pulse_idx)
     
