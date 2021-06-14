@@ -44,6 +44,9 @@ if __name__ == '__main__':
 
     outdir = 'test_out'
     outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
+    if path.exists(outfile):
+        print('Output file already existing, exiting.')
+        sys.exit(1)
 
     log_data = pd.read_csv(logfile, index_col=0)
     # Add column for merged flag
