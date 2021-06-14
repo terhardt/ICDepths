@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from os import path
 import sys
+import argparse
 
 
 def prompt_vial_range():
@@ -42,14 +43,22 @@ def merge_with_next_vial(log_data, vial_idx):
 
 
 if __name__ == '__main__':
-    try:
-        logfile = sys.argv[1]
-    except IndexError:
-        print('Provide logfile as commandline argument')
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("vial_info_file", help='Vial info file produced from Bern CFA data', type=str)
+    parser.add_argument("--vials", metavar='VIAL', help='Vial range logged for file', nargs=2, type=int)
+    parser.add_argument("-o", help='Overwrite if output is existing', type=bool)
+    parser.add_argument("--outdir", help='Output directory for pricessed files (default: output)', default='output', type=str)
+    args = parser.parse_args()
 
-    outdir = 'test_out'
+    logfile = args.vial_info_file
+
+    outdir = args.outdir
+    overwrite = args.o
+    if overwrite:
+        print('WARNING existing output will be overwritte')
     outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
-    if path.exists(outfile):
+    if path.exists(outfile) and not overwrite:
         print('Output file already existing, exiting.')
         sys.exit(1)
 
@@ -68,7 +77,9 @@ if __name__ == '__main__':
     print('Bags: ', bags)
     print('Number of pulses logged: %g' % nlogged)
 
-    first_ic_vial, last_ic_vial = prompt_vial_range()
+    first_ic_vial, last_ic_vial = args.vials
+    if not first_ic_vial or not last_ic_vial:
+        first_ic_vial, last_ic_vial = prompt_vial_range()
     nfilled = last_ic_vial - first_ic_vial + 1
     ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
     print('Number of vials filled: %g' % nfilled)
