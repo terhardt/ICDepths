@@ -24,6 +24,17 @@ def vial_range_prompt():
     return first_ic_vial, last_ic_vial
 
 
+def merge_with_next_vial(log_data, vial_idx):
+    """Merge a missed vial with the next vial
+    and update log_data table
+
+    Used to correct for missed pulses
+    """
+    log_data.loc[vial_idx, 'Depth_bot'] = log_data.loc[vial_idx + 1, 'Depth_bot']
+    log_data.loc[vial_idx, 'Breaks'] = np.int64(np.any(log_data.loc[[vial_idx, vial_idx + 1], 'Breaks'] == 1))
+    return log_data.drop(vial_idx + 1)
+
+
 if __name__ == '__main__':
     try:
         logfile = sys.argv[1]
