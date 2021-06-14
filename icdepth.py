@@ -1,4 +1,8 @@
-"""Script to add AWI IC-vial numbers to Bern CFA logfiles"""
+"""Script to add AWI IC-vial numbers to Bern CFA logfiles
+
+This script should be used to re-concile Bern CFA logfiles and the notes
+taken during the fraction collection itself.
+"""
 import pandas as pd
 import numpy as np
 from os import path
@@ -13,6 +17,7 @@ def prompt_vial_range():
 
 
 def prompt_vialnumber(first_vial, last_vial):
+    """Prompt user for a vial number and check it against possible vial range"""
     n = input('Vial? ')
     try:
         n = int(n)
