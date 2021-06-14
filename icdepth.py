@@ -5,7 +5,7 @@ from os import path
 import sys
 
 
-def vial_range_prompt():
+def prompt_vial_range():
     """Prompt user for first and last vial of run"""
     first_ic_vial = int(input('First IC vial? '))
     last_ic_vial = int(input('Last IC vial? '))
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     print('Bags: ', bags)
     print('Number of pulses logged: %g' % nlogged)
 
-    first_ic_vial, last_ic_vial = vial_range_prompt()
+    first_ic_vial, last_ic_vial = prompt_vial_range()
     nfilled = last_ic_vial - first_ic_vial + 1
     ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
     print('Number of vials filled: %g' % nfilled)
