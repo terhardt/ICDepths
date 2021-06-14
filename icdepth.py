@@ -59,6 +59,7 @@ if __name__ == '__main__':
 
     first_ic_vial, last_ic_vial = vial_range_prompt()
     nfilled = last_ic_vial - first_ic_vial + 1
+    ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
     print('Number of vials filled: %g' % nfilled)
     print()
 
@@ -68,11 +69,15 @@ if __name__ == '__main__':
         print('WARNING, logged and filled number of vials DO NOT MATCH')
         print('logged:', nlogged)
         print('filled:', nfilled)
-        sys.exit(1)
-
-    ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
-
-    log_data['IC_Vial'] = np.arange(first_ic_vial, last_ic_vial + 1)
+        nmissed = nlogged - nfilled
+        print('Please enter the numbers of %g missed vials' % nmissed)
+        for imissed in range(nmissed):
+            missed = int(input('Pulse missed at end of vial: '))
+            pulse_idx = np.where(ic_vials == missed)[0].item()
+            print('Merging pulse %g with next vial' % pulse_idx)
+            log_data = merge_with_next_vial(log_data, pulse_idx)
+    
+    log_data['IC_Vial'] = ic_vials
     print()
     print('Saving to: %s' % outfile)
     log_data.to_csv(outfile, index=True)
