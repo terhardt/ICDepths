@@ -6,6 +6,7 @@ taken during the fraction collection itself.
 import pandas as pd
 import numpy as np
 from os import path
+import json
 import sys
 import argparse
 
@@ -49,15 +50,21 @@ if __name__ == '__main__':
     parser.add_argument("--vials", metavar='VIAL', help='Vial range logged for file', nargs=2, type=int)
     parser.add_argument("-o", help='Overwrite if output is existing', type=bool)
     parser.add_argument("--outdir", help='Output directory for pricessed files (default: output)', default='output', type=str)
+    parser.add_argument("--metadir", help='Output directory for metadata files (default: metadata)', default='metadata', type=str)
     args = parser.parse_args()
 
     logfile = args.vial_info_file
 
     outdir = args.outdir
+    metadir = args.metadir
+
+    outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
+    metafile = path.join(metadir, path.basename(logfile).replace('info', 'assign').replace('.csv', '.json'))
+    # Dictionary to hold the metadata to reproduce processing
+    metadata = dict(logfile=path.basename(logfile))
     overwrite = args.o
     if overwrite:
         print('WARNING existing output will be overwritte')
-    outfile = path.join(outdir, path.basename(logfile).replace('info', 'assign'))
     if path.exists(outfile) and not overwrite:
         print('Output file already existing, exiting.')
         sys.exit(1)
@@ -77,6 +84,10 @@ if __name__ == '__main__':
     print('Bags: ', bags)
     print('Number of pulses logged: %g' % nlogged)
 
+    metadata['Depth_top'] = depth_top
+    metadata['Depth_bot'] = depth_bot
+    metadata['nlogged'] = nlogged
+
     first_ic_vial, last_ic_vial = args.vials
     if not first_ic_vial or not last_ic_vial:
         first_ic_vial, last_ic_vial = prompt_vial_range()
@@ -84,6 +95,10 @@ if __name__ == '__main__':
     ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
     print('Number of vials filled: %g' % nfilled)
     print()
+
+    metadata['first_vial'] = first_ic_vial
+    metadata['last_vial'] = last_ic_vial
+    metadata['nfilled'] = nfilled
 
     if nfilled == nlogged:
         print('Nice, logged and filled number of vials match')
@@ -106,6 +121,7 @@ if __name__ == '__main__':
             missed_vial = prompt_vialnumber(first_ic_vial, last_ic_vial)
             missed_vials.append(missed_vial)
         print()
+        metadata['missed_vials'] = missed_vials
         for missed_vial in sorted(missed_vials, reverse=True):
             pulse_idx = np.where(ic_vials == missed_vial)[0].item()
             print('Merging pulse %g with next vial' % pulse_idx)
@@ -113,6 +129,9 @@ if __name__ == '__main__':
 
     log_data['IC_Vial'] = ic_vials
     print()
-    print('Saving to: %s' % outfile)
+    print('Saving assignment to: %s' % outfile)
     log_data.to_csv(outfile, index=True)
+    print('Saving metadata to: %s' % metafile)
+    with open(metafile, 'w') as fp:
+        json.dump(metadata, fp, indent=4)
     print('done.')
