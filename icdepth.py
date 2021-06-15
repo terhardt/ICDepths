@@ -48,7 +48,7 @@ if __name__ == '__main__':
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("vial_info_file", help='Vial info file produced from Bern CFA data', type=str)
     parser.add_argument("--vials", metavar='VIAL', help='Vial range logged for file', nargs=2, type=int)
-    parser.add_argument("-o", help='Overwrite if output is existing', type=bool)
+    parser.add_argument("-o", help='Overwrite if output is existing', action='store_true')
     parser.add_argument("--outdir", help='Output directory for pricessed files (default: output)', default='output', type=str)
     parser.add_argument("--metadir", help='Output directory for metadata files (default: metadata)', default='metadata', type=str)
     args = parser.parse_args()
