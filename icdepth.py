@@ -88,9 +88,10 @@ if __name__ == '__main__':
     metadata['Depth_bot'] = depth_bot
     metadata['nlogged'] = nlogged
 
-    first_ic_vial, last_ic_vial = args.vials
-    if not first_ic_vial or not last_ic_vial:
+    if args.vials is None:
         first_ic_vial, last_ic_vial = prompt_vial_range()
+    else:
+        first_ic_vial, last_ic_vial = args.vials
     nfilled = last_ic_vial - first_ic_vial + 1
     ic_vials = np.arange(first_ic_vial, last_ic_vial + 1)
     print('Number of vials filled: %g' % nfilled)
